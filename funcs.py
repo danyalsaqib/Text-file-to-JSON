@@ -8,17 +8,11 @@ from lxml import etree
 from tqdm import tqdm
 from io import StringIO
 
-import cv2
-from bs4 import BeautifulSoup
+
 import numpy as np
-import ast
 from math import *
-from insightface.app import FaceAnalysis
-import insightface
 import time
-from vidgear.gears import CamGear
 #from insight_utils import *
-from skimage import transform as trans
 import os
 import json
 import re
@@ -29,6 +23,19 @@ from numpy import array
 #rec_model_path = "./insightface/models/buffalo_l/w600k_r50.onnx"
 #handler = insightface.model_zoo.get_model(rec_model_path)
 #handler.prepare(ctx_id=0)
+
+def list_anno_file(cvat_xml):
+    root = etree.parse(cvat_xml).getroot()
+    anno = []
+    image_name_attr = ".//image"
+    annot_image_list = []
+    for image_tag in root.iterfind(image_name_attr):
+        hmm = image_tag.items()
+        lol = hmm[1][1]
+        annot_image_list.append(lol)
+        #print("Image Tag: ", lol1)
+    #print("List of Annotated Images", annot_image_list)
+    return annot_image_list
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -104,7 +111,7 @@ def parse_anno_file(cvat_xml, image_name):
     #print("Parsed XML File", anno)
     return anno
 
-def genrate_final_annotation(ground_truth , xml_file, images):
+def genrate_final_annotation(ground_truth, xml_file):
     tot_count = 0
     counting_fails = 0
     for filename in os.listdir(ground_truth):
@@ -120,7 +127,8 @@ def genrate_final_annotation(ground_truth , xml_file, images):
             bbox = data1["Bbox"]
             labelss = data1["Label"]
             found = 0
-            for filename1 in os.listdir(images):
+            annot_image_list = list_anno_file(xml_file)
+            for filename1 in annot_image_list:
                 if (filename[:-3]==filename1[:-3]):
                     counting_fails += 1
                     found = 1

@@ -1,8 +1,9 @@
 import json
-from test import *
+from funcs import *
 import os
 
 channel_list = ['express', 'hum', 'ptv']
+channel_list_2 = ['express']
 
 #*********************************************************#
 #                       Main
@@ -16,16 +17,17 @@ if __name__ == '__main__':
     print("XTL: ", lol[0]['shapes'][0]['xtl'])
     """
 
-    for channel_name in channel_list:
+    for channel_name in channel_list_2:
         ground_truth = os.path.join(channel_name, "infered_results")
         xml_file = os.path.join(channel_name, "annotations.xml")
-        input_manual = os.path.join(channel_name, "images")
+        #input_manual = os.path.join(channel_name, "images")
         print("**********************")
         print("Channel: ", channel_name)
         print("Ground Truth: ", ground_truth)
         print("XML File: ", xml_file)
-        print("Input Manual: ", input_manual, "\n")
-        genrate_final_annotation(ground_truth, xml_file, input_manual)
+        #print("Input Manual: ", input_manual, "\n")
+        genrate_final_annotation(ground_truth, xml_file)
+        #list_anno_file(xml_file)
 
 
     
